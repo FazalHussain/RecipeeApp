@@ -3,6 +3,7 @@ package com.example.recipeapp.presentation.ui.recipe_list
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -30,19 +31,25 @@ constructor(
 
     val recipes: MutableState<List<Recipe>> = mutableStateOf(listOf())
 
+    val query = mutableStateOf("")
+
     init {
-        newSearch()
+        newSearch(query.value)
     }
 
-    private fun newSearch() {
+    fun newSearch(query: String) {
         viewModelScope.launch {
             val result = recipeRepository.search(
                 token = authToken,
                 page = 1,
-                query = "chicken",
+                query = query,
             )
             recipes.value = result
         }
+    }
+
+    fun onQueryChanged(query: String) {
+        this.query.value = query
     }
 
 
