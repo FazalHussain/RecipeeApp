@@ -8,27 +8,22 @@ import android.view.ViewGroup
 import androidx.compose.foundation.ScrollableRow
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.findNavController
-import com.example.recipeapp.R
 import com.example.recipeapp.presentation.components.FoodCategoryChip
 import com.example.recipeapp.presentation.components.RecipeCard
-import com.example.recipeapp.utils.Constants
 import com.example.recipeapp.utils.Constants.TAG
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -95,16 +90,25 @@ class RecipeListFragment : Fragment() {
 
                                 )
 
+                                val scrollState = rememberScrollState() //remember the scrolling state
+
                                 ScrollableRow(modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(start = 8.dp, bottom = 8.dp)
+                                        .padding(start = 8.dp, bottom = 8.dp),
+                                        scrollState = scrollState
                                 ) {
+                                    // update the scroll position in scroll state
+                                    scrollState.scrollTo(viewModel.categoryScrollPosition)
                                     for (foodCategory in getAllFoodCategories()) {
                                         FoodCategoryChip(
                                                 category = foodCategory.value,
                                                 isSelected = selectedCategory == foodCategory,
                                                 onSelectedCategoryChanged = {
                                                     viewModel.onSelectedCategory(it)
+                                                    // set the category state change based on the scroll state
+                                                    viewModel.onCategoryScrollingStateChanged(
+                                                            scrollState.value
+                                                    )
                                                 },
                                                 onExecuteSearch = viewModel::newSearch
                                         )

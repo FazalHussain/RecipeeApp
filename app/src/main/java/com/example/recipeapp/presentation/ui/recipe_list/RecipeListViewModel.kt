@@ -1,19 +1,13 @@
 package com.example.recipeapp.presentation.ui.recipe_list
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.recipeapp.domain.model.Recipe
 import com.example.recipeapp.repository.RecipeRepository
-import com.example.recipeapp.utils.Constants.TAG
 import kotlinx.coroutines.launch
-import java.util.*
 import javax.inject.Named
 
 /**
@@ -35,6 +29,8 @@ constructor(
 
     // Food Category would be null if user search from textfield
     val selectedCategory: MutableState<FoodCategory?> = mutableStateOf(null)
+
+    var categoryScrollPosition: Float = 0f
 
     init {
         newSearch()
@@ -59,6 +55,10 @@ constructor(
         val newCategory = getFoodCategory(category)
         selectedCategory.value = newCategory
         onQueryChanged(category)
+    }
+
+    fun onCategoryScrollingStateChanged(position: Float) {
+        categoryScrollPosition = position
     }
 
 
