@@ -22,10 +22,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.example.recipeapp.presentation.components.CircularIndeterminateProgressBar
-import com.example.recipeapp.presentation.components.FoodCategoryChip
-import com.example.recipeapp.presentation.components.RecipeCard
-import com.example.recipeapp.presentation.components.SearchAppBar
+import com.example.recipeapp.presentation.components.*
 import com.example.recipeapp.utils.Constants.TAG
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -65,9 +62,11 @@ class RecipeListFragment : Fragment() {
                             viewModel::onCategoryScrollingStateChanged
                     )
 
+                    PulsingDemo()
+
                     // Box composable is used to overlap the childrens with each other
                     // The children which is placed at lower would be on top
-                    Box(modifier = Modifier.fillMaxSize()) {
+                    /*Box(modifier = Modifier.fillMaxSize()) {
 
                         LazyColumn {
                             itemsIndexed(items = recipes) { index, recipe ->
@@ -76,7 +75,7 @@ class RecipeListFragment : Fragment() {
                         }
 
                         CircularIndeterminateProgressBar(isDisplayed = isShowLoading)
-                    }
+                    }*/
 
 
                 }
