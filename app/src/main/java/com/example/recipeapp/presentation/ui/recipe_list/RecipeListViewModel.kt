@@ -6,6 +6,8 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.recipeapp.domain.model.Recipe
+import com.example.recipeapp.presentation.components.HeartAnimationDefinition
+import com.example.recipeapp.presentation.components.HeartAnimationDefinition.HeartStates.*
 import com.example.recipeapp.repository.RecipeRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -34,6 +36,8 @@ constructor(
     var categoryScrollPosition: Float = 0f
 
     val isShowLoading = mutableStateOf(false)
+
+    val favState = mutableStateOf(IDLE)
 
     init {
         newSearch()
@@ -79,6 +83,10 @@ constructor(
 
     fun onCategoryScrollingStateChanged(position: Float) {
         categoryScrollPosition = position
+    }
+
+    fun changeFavState(recipe: Recipe) {
+        recipe.isFav.value = if (recipe.isFav.value == IDLE) ACTIVE else IDLE
     }
 
 
