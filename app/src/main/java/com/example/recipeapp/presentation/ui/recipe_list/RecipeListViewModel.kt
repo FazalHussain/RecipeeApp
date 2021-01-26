@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.recipeapp.domain.model.Recipe
 import com.example.recipeapp.repository.RecipeRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Named
 
@@ -32,19 +33,38 @@ constructor(
 
     var categoryScrollPosition: Float = 0f
 
+    val isShowLoading = mutableStateOf(false)
+
     init {
         newSearch()
     }
 
     fun newSearch() {
         viewModelScope.launch {
+            isShowLoading.value = true
+
+            resetSearchState()
+
+            delay(2000)
+
             val result = recipeRepository.search(
                 token = authToken,
                 page = 1,
                 query = query.value,
             )
             recipes.value = result
+
+            isShowLoading.value = false
         }
+    }
+
+    private fun resetSearchState() {
+        recipes.value = listOf()
+        if (selectedCategory.value?.value != query.value) clearSelectedCategory()
+    }
+
+    private fun clearSelectedCategory() {
+        selectedCategory.value = null
     }
 
     fun onQueryChanged(query: String) {

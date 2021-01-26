@@ -65,8 +65,8 @@ fun RecipeCard(
                     )
                     Text(text = recipe.rating.toString(),
                         modifier = Modifier
-                            .fillMaxWidth() // title would take 85% of width
-                            .wrapContentWidth(Alignment.Start)
+                            .fillMaxWidth() // rating would take 15% of width
+                            .wrapContentWidth(Alignment.End)
                             .align(Alignment.CenterVertically),
                         style = MaterialTheme.typography.h6
                     )

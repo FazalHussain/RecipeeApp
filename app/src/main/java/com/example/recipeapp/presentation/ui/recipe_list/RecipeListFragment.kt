@@ -22,8 +22,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.example.recipeapp.presentation.components.CircularIndeterminateProgressBar
 import com.example.recipeapp.presentation.components.FoodCategoryChip
 import com.example.recipeapp.presentation.components.RecipeCard
+import com.example.recipeapp.presentation.components.SearchAppBar
 import com.example.recipeapp.utils.Constants.TAG
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -49,80 +51,34 @@ class RecipeListFragment : Fragment() {
 
                 val selectedCategory = viewModel.selectedCategory.value
 
+                val isShowLoading = viewModel.isShowLoading.value
+
                 Column {
-                    Surface(
-                            modifier = Modifier
-                                    .fillMaxWidth(),
-                            color = Color.White,
-                            elevation = 8.dp
-                    ) {
-                        Row {
-                            Column {
-                                TextField(
-                                        modifier = Modifier
-                                                .fillMaxWidth(0.9f)
-                                                .padding(8.dp),
-                                        value = query,
-                                        onValueChange = {
-                                            Log.d(TAG, "onCreateView: $it")
-                                            viewModel.onQueryChanged(it)
-                                        },
-                                        label = {
-                                            Text(text = "Search")
-                                        },
-                                        keyboardOptions = KeyboardOptions(
-                                                keyboardType = KeyboardType.Text,
-                                                imeAction = ImeAction.Search
-                                        ),
-                                        leadingIcon = {
-                                            Icon(Icons.Filled.Search)
-                                        },
-                                        onImeActionPerformed = { action,
-                                                                 keyboardController ->
-                                            if (action == ImeAction.Search) {
-                                                viewModel.newSearch()
-                                                keyboardController?.hideSoftwareKeyboard()
-                                            }
-                                        },
-                                        textStyle = TextStyle(color = MaterialTheme
-                                                .colors.onSurface),
-                                        backgroundColor = MaterialTheme.colors.surface
+                    SearchAppBar(
+                            query = query,
+                            onQueryChanged = viewModel::onQueryChanged,
+                            onExecuteSearch = viewModel::newSearch,
+                            categoryScrollPosition = viewModel.categoryScrollPosition,
+                            selectedCategory = selectedCategory,
+                            onSelectedCategory = viewModel::onSelectedCategory,
+                            onCategoryScrollingStateChanged =
+                            viewModel::onCategoryScrollingStateChanged
+                    )
 
-                                )
+                    // Box composable is used to overlap the childrens with each other
+                    // The children which is placed at lower would be on top
+                    Box(modifier = Modifier.fillMaxSize()) {
 
-                                val scrollState = rememberScrollState() //remember the scrolling state
-
-                                ScrollableRow(modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 8.dp, bottom = 8.dp),
-                                        scrollState = scrollState
-                                ) {
-                                    // update the scroll position in scroll state
-                                    scrollState.scrollTo(viewModel.categoryScrollPosition)
-                                    for (foodCategory in getAllFoodCategories()) {
-                                        FoodCategoryChip(
-                                                category = foodCategory.value,
-                                                isSelected = selectedCategory == foodCategory,
-                                                onSelectedCategoryChanged = {
-                                                    viewModel.onSelectedCategory(it)
-                                                    // set the category state change based on the scroll state
-                                                    viewModel.onCategoryScrollingStateChanged(
-                                                            scrollState.value
-                                                    )
-                                                },
-                                                onExecuteSearch = viewModel::newSearch
-                                        )
-                                    }
-                                }
+                        LazyColumn {
+                            itemsIndexed(items = recipes) { index, recipe ->
+                                RecipeCard(recipe, onClick = {})
                             }
+                        }
 
-                        }
+                        CircularIndeterminateProgressBar(isDisplayed = isShowLoading)
                     }
-                    LazyColumn {
-                        itemsIndexed(items = recipes) { index, recipe ->
-                            RecipeCard(recipe, onClick = {})
-                        }
-                    }
+
+
                 }
 
 
