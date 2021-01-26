@@ -14,6 +14,28 @@ import com.example.recipeapp.R
 
 const val DEFAULT_RECIPE_IMAGE = R.drawable.empty_plate
 
+
+@Composable
+fun loadPicture(@DrawableRes drawable: Int) : MutableState<Bitmap?> {
+
+    val bitmapState: MutableState<Bitmap?> = mutableStateOf(null)
+
+    Glide.with(AmbientContext.current)
+            .asBitmap()
+            .load(drawable)
+            .into(object : CustomTarget<Bitmap>() {
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                    bitmapState.value = resource
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {}
+
+            })
+
+    return bitmapState
+
+}
+
 @Composable
 fun loadPicture(
     url: String, 
@@ -21,6 +43,7 @@ fun loadPicture(
 
     val bitmapState: MutableState<Bitmap?> = mutableStateOf(null)
 
+    // Load the place holder
     Glide.with(AmbientContext.current)
         .asBitmap()
         .load(defaultDrawable)
@@ -33,7 +56,7 @@ fun loadPicture(
 
         })
 
-
+    // Load from the network
     Glide.with(AmbientContext.current)
         .asBitmap()
         .load(url)

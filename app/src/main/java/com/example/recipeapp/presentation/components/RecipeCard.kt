@@ -11,17 +11,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.unit.dp
-import com.example.recipeapp.R
 import com.example.recipeapp.domain.model.Recipe
 import com.example.recipeapp.utils.DEFAULT_RECIPE_IMAGE
 import com.example.recipeapp.utils.loadPicture
 
 @Composable
 fun RecipeCard(
-    recipe: Recipe,
-    onClick: () -> Unit
+        recipe: Recipe,
+        onFavStateChanged: (Recipe) -> Unit,
+        onClick: () -> Unit
 ) {
     Card(
         shape = MaterialTheme.shapes.medium,
@@ -35,15 +34,33 @@ fun RecipeCard(
     ) {
         Column{
             recipe.featuredImage?.let { url ->
-                val image = loadPicture(url = url, defaultDrawable = DEFAULT_RECIPE_IMAGE).value
-                image?.let { img ->
-                    Image(bitmap = img.asImageBitmap(),
+                Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .preferredHeight(225.dp),
-                        contentScale = ContentScale.Crop
+                                .fillMaxWidth()
+                                .preferredHeight(225.dp)
+                ) {
+                    val image = loadPicture(url = url,
+                            defaultDrawable = DEFAULT_RECIPE_IMAGE).value
+                    image?.let { img ->
+                        Image(bitmap = img.asImageBitmap(),
+                                modifier = Modifier
+                                        .fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                        )
+                    }
+
+                    AnimatedHeartButton(
+                            modifier = Modifier
+                                    .padding(8.dp)
+                                    .align(Alignment.BottomEnd),
+                            buttonState = recipe.isFav,
+                            onToggle = {
+                                onFavStateChanged(recipe)
+                            }
                     )
+
                 }
+
             }
 
             Row(
