@@ -33,16 +33,19 @@ constructor(
 
     val query = mutableStateOf("")
 
+    // Food Category would be null if user search from textfield
+    val selectedCategory: MutableState<FoodCategory?> = mutableStateOf(null)
+
     init {
-        newSearch(query.value)
+        newSearch()
     }
 
-    fun newSearch(query: String) {
+    fun newSearch() {
         viewModelScope.launch {
             val result = recipeRepository.search(
                 token = authToken,
                 page = 1,
-                query = query,
+                query = query.value,
             )
             recipes.value = result
         }
@@ -50,6 +53,12 @@ constructor(
 
     fun onQueryChanged(query: String) {
         this.query.value = query
+    }
+
+    fun onSelectedCategory(category: String) {
+        val newCategory = getFoodCategory(category)
+        selectedCategory.value = newCategory
+        onQueryChanged(category)
     }
 
 
