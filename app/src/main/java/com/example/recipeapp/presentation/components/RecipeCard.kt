@@ -24,10 +24,7 @@ fun RecipeCard(
 ) {
     Card(
         shape = MaterialTheme.shapes.medium,
-        modifier = Modifier.padding(
-            bottom = 6.dp,
-            top = 6.dp
-            )
+        modifier = Modifier.padding(6.dp)
             .fillMaxWidth()
             .clickable(onClick = onClick),
         elevation = 8.dp
@@ -78,14 +75,14 @@ fun RecipeCard(
                         modifier = Modifier
                             .fillMaxWidth(0.85f) // title would take 85% of width
                             .wrapContentWidth(Alignment.Start),
-                        style = MaterialTheme.typography.h5
+                        style = MaterialTheme.typography.h3
                     )
                     Text(text = recipe.rating.toString(),
                         modifier = Modifier
                             .fillMaxWidth() // rating would take 15% of width
                             .wrapContentWidth(Alignment.End)
                             .align(Alignment.CenterVertically),
-                        style = MaterialTheme.typography.h6
+                        style = MaterialTheme.typography.h4
                     )
                 }
             }
