@@ -8,13 +8,19 @@ import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MobileFriendly
+import androidx.compose.material.icons.filled.MobileScreenShare
+import androidx.compose.material.icons.filled.MonetizationOn
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
 import com.example.recipeapp.presentation.BaseApplication
 import com.example.recipeapp.presentation.components.*
 import com.example.recipeapp.presentation.theme.AppTheme
@@ -52,23 +58,29 @@ class RecipeListFragment : Fragment() {
 
                     val isShowLoading = viewModel.isShowLoading.value
 
-                    Column {
-                        SearchAppBar(
-                                query = query,
-                                onQueryChanged = viewModel::onQueryChanged,
-                                onExecuteSearch = viewModel::newSearch,
-                                categoryScrollPosition = viewModel.categoryScrollPosition,
-                                selectedCategory = selectedCategory,
-                                onSelectedCategory = viewModel::onSelectedCategory,
-                                onCategoryScrollingStateChanged =
-                                viewModel::onCategoryScrollingStateChanged,
-                                onToogleTheme = {
-                                    application.onThemeChange()
-                                }
-                        )
-
-                        //PulsingDemo()
-
+                    Scaffold(
+                            topBar = {
+                                SearchAppBar(
+                                        query = query,
+                                        onQueryChanged = viewModel::onQueryChanged,
+                                        onExecuteSearch = viewModel::newSearch,
+                                        categoryScrollPosition = viewModel.categoryScrollPosition,
+                                        selectedCategory = selectedCategory,
+                                        onSelectedCategory = viewModel::onSelectedCategory,
+                                        onCategoryScrollingStateChanged =
+                                        viewModel::onCategoryScrollingStateChanged,
+                                        onToogleTheme = {
+                                            application.onThemeChange()
+                                        }
+                                )
+                            },
+                            drawerContent = {
+                                MyDrawer()
+                            },
+                            bottomBar = {
+                                MyBottomBar()
+                            }
+                    ) {
                         // Box composable is used to overlap the childrens with each other
                         // The children which is placed at lower would be on top
                         Box(modifier = Modifier
@@ -88,11 +100,41 @@ class RecipeListFragment : Fragment() {
                             }
                             CircularIndeterminateProgressBar(isDisplayed = isShowLoading)
                         }
-
-
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun MyBottomBar() {
+    BottomNavigation(elevation = 12.dp) {
+        BottomNavigationItem(
+                icon = { Icon(Icons.Filled.MobileScreenShare) },
+                selected = false,
+                onClick = {}
+        )
+        BottomNavigationItem(
+                icon = { Icon(Icons.Filled.MobileFriendly) },
+                selected = true,
+                onClick = {}
+        )
+        BottomNavigationItem(
+                icon = { Icon(Icons.Filled.MonetizationOn) },
+                selected = false,
+                onClick = {}
+        )
+    }
+}
+
+@Composable
+fun MyDrawer() {
+    Column {
+        Text("Drawer Item 1")
+        Text("Drawer Item 2")
+        Text("Drawer Item 3")
+        Text("Drawer Item 4")
+        Text("Drawer Item 5")
     }
 }
