@@ -1,4 +1,4 @@
-# RecipeeApp
+# RecipeeAppUsingCompose
 In this project you can learn different new android technnologies stack for example Jetpack Compose (Declarative UI), Dagger Hilt, Custom Theming, MVVM, Animation with Compose, MutableState Data Structure, etc.
 
 
