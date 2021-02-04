@@ -54,6 +54,8 @@ class RecipeListFragment : Fragment() {
                     //val query = remember { mutableStateOf("chcik") }
                     val query = viewModel.query.value
 
+                    val page = viewModel.page.value
+
                     val selectedCategory = viewModel.selectedCategory.value
 
                     val isShowLoading = viewModel.isShowLoading.value
@@ -73,12 +75,6 @@ class RecipeListFragment : Fragment() {
                                             application.onThemeChange()
                                         }
                                 )
-                            },
-                            drawerContent = {
-                                MyDrawer()
-                            },
-                            bottomBar = {
-                                MyBottomBar()
                             }
                     ) {
                         // Box composable is used to overlap the childrens with each other
@@ -86,11 +82,17 @@ class RecipeListFragment : Fragment() {
                         Box(modifier = Modifier
                                 .fillMaxSize()
                                 .background(color = MaterialTheme.colors.background)) {
-                            if (isShowLoading) {
+                            if (isShowLoading && recipes.isEmpty()) {
                                 LoadingRecipeShimmer(250.dp)
                             } else {
                                 LazyColumn {
                                     itemsIndexed(items = recipes) { index, recipe ->
+                                        viewModel.onScrollPositionChanges(index)
+                                        // Check if scroll position reached to the bottom of the list
+                                        if ((index + 1) >= (page * PAGE_SIZE) &&
+                                                !isShowLoading) {
+                                            viewModel.nextPage()
+                                        }
                                         RecipeCard(recipe,
                                                 viewModel::changeFavState,
                                                 onClick = { }
@@ -104,37 +106,5 @@ class RecipeListFragment : Fragment() {
                 }
             }
         }
-    }
-}
-
-@Composable
-fun MyBottomBar() {
-    BottomNavigation(elevation = 12.dp) {
-        BottomNavigationItem(
-                icon = { Icon(Icons.Filled.MobileScreenShare) },
-                selected = false,
-                onClick = {}
-        )
-        BottomNavigationItem(
-                icon = { Icon(Icons.Filled.MobileFriendly) },
-                selected = true,
-                onClick = {}
-        )
-        BottomNavigationItem(
-                icon = { Icon(Icons.Filled.MonetizationOn) },
-                selected = false,
-                onClick = {}
-        )
-    }
-}
-
-@Composable
-fun MyDrawer() {
-    Column {
-        Text("Drawer Item 1")
-        Text("Drawer Item 2")
-        Text("Drawer Item 3")
-        Text("Drawer Item 4")
-        Text("Drawer Item 5")
     }
 }
