@@ -24,6 +24,7 @@ import androidx.navigation.NavController
 import com.example.recipeapp.presentation.BaseApplication
 import com.example.recipeapp.presentation.components.*
 import com.example.recipeapp.presentation.theme.AppTheme
+import com.example.recipeapp.presentation.ui.recipe_list.RecipeStateEvents.*
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -65,7 +66,9 @@ class RecipeListFragment : Fragment() {
                                 SearchAppBar(
                                         query = query,
                                         onQueryChanged = viewModel::onQueryChanged,
-                                        onExecuteSearch = viewModel::newSearch,
+                                        onExecuteSearch = {
+                                            viewModel.onTriggerEvent(NewSearchEvent)
+                                        },
                                         categoryScrollPosition = viewModel.categoryScrollPosition,
                                         selectedCategory = selectedCategory,
                                         onSelectedCategory = viewModel::onSelectedCategory,
@@ -91,7 +94,7 @@ class RecipeListFragment : Fragment() {
                                         // Check if scroll position reached to the bottom of the list
                                         if ((index + 1) >= (page * PAGE_SIZE) &&
                                                 !isShowLoading) {
-                                            viewModel.nextPage()
+                                            viewModel.onTriggerEvent(NextPageEvent)
                                         }
                                         RecipeCard(recipe,
                                                 viewModel::changeFavState,

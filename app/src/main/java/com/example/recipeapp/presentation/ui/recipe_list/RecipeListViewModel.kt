@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.recipeapp.domain.model.Recipe
 import com.example.recipeapp.presentation.components.HeartAnimationDefinition
 import com.example.recipeapp.presentation.components.HeartAnimationDefinition.HeartStates.*
+import com.example.recipeapp.presentation.ui.recipe_list.RecipeStateEvents.*
 import com.example.recipeapp.repository.RecipeRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -45,47 +46,52 @@ constructor(
     var scrollingPosition = 0
 
     init {
-        newSearch()
+        onTriggerEvent(NewSearchEvent)
     }
 
-    fun newSearch() {
+    fun onTriggerEvent(recipeStateEvents: RecipeStateEvents) {
         viewModelScope.launch {
-            isShowLoading.value = true
-
-            resetSearchState()
-
-            delay(2000)
-
-            val result = recipeRepository.search(
-                token = authToken,
-                page = 1,
-                query = query.value,
-            )
-            recipes.value = result
-
-            isShowLoading.value = false
+            when(recipeStateEvents) {
+                NewSearchEvent -> newSearch()
+                NextPageEvent -> nextPage()
+            }
         }
     }
 
-    fun nextPage() {
-        viewModelScope.launch {
-            // Prevent recomposition due to recomposition too quickly
-            if ((scrollingPosition + 1) >= page.value * PAGE_SIZE) {
-                isShowLoading.value = true
-                incrementPage()
+    private suspend fun newSearch() {
+        isShowLoading.value = true
 
-                delay(1000)
+        resetSearchState()
 
-                if (page.value > 1) {
-                    val results = recipeRepository.search(
-                            token = authToken,
-                            page = page.value,
-                            query = query.value
-                    )
-                    appendRecipe(results)
-                }
-                isShowLoading.value = false
+        delay(2000)
+
+        val result = recipeRepository.search(
+                token = authToken,
+                page = 1,
+                query = query.value,
+        )
+        recipes.value = result
+
+        isShowLoading.value = false
+    }
+
+    private suspend fun nextPage() {
+        // Prevent recomposition due to recomposition too quickly
+        if ((scrollingPosition + 1) >= page.value * PAGE_SIZE) {
+            isShowLoading.value = true
+            incrementPage()
+
+            delay(1000)
+
+            if (page.value > 1) {
+                val results = recipeRepository.search(
+                        token = authToken,
+                        page = page.value,
+                        query = query.value
+                )
+                appendRecipe(results)
             }
+            isShowLoading.value = false
         }
     }
 
