@@ -2,16 +2,15 @@ package com.example.recipeapp.presentation.components
 
 import android.util.Log
 import androidx.compose.foundation.ScrollableRow
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -31,47 +30,69 @@ fun SearchAppBar(
         selectedCategory: FoodCategory?,
         onSelectedCategory: (String) -> Unit,
         onCategoryScrollingStateChanged: (Float) -> Unit,
-
+        onToogleTheme: () -> Unit
 ) {
     Surface(
             modifier = Modifier
                     .fillMaxWidth(),
-            color = Color.White,
+            color = MaterialTheme.colors.surface,
             elevation = 8.dp
     ) {
         Row {
             Column {
-                TextField(
-                        modifier = Modifier
-                                .fillMaxWidth(0.9f)
-                                .padding(8.dp),
-                        value = query,
-                        onValueChange = {
-                            Log.d(Constants.TAG, "onCreateView: $it")
-                            onQueryChanged(it)
-                        },
-                        label = {
-                            Text(text = "Search")
-                        },
-                        keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Text,
-                                imeAction = ImeAction.Search
-                        ),
-                        leadingIcon = {
-                            Icon(Icons.Filled.Search)
-                        },
-                        onImeActionPerformed = { action,
-                                                 keyboardController ->
-                            if (action == ImeAction.Search) {
-                                onExecuteSearch()
-                                keyboardController?.hideSoftwareKeyboard()
-                            }
-                        },
-                        textStyle = TextStyle(color = MaterialTheme
-                                .colors.onSurface),
-                        backgroundColor = MaterialTheme.colors.surface
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    TextField(
+                            modifier = Modifier
+                                    .fillMaxWidth(0.9f)
+                                    .padding(8.dp),
+                            value = query,
+                            onValueChange = {
+                                Log.d(Constants.TAG, "onCreateView: $it")
+                                onQueryChanged(it)
+                            },
+                            label = {
+                                Text(text = "Search")
+                            },
+                            keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Text,
+                                    imeAction = ImeAction.Search
+                            ),
+                            leadingIcon = {
+                                Icon(Icons.Filled.Search)
+                            },
+                            onImeActionPerformed = { action,
+                                                     keyboardController ->
+                                if (action == ImeAction.Search) {
+                                    onExecuteSearch()
+                                    keyboardController?.hideSoftwareKeyboard()
+                                }
+                            },
+                            textStyle = TextStyle(color = MaterialTheme
+                                    .colors.onSurface),
+                            backgroundColor = MaterialTheme.colors.surface
 
-                )
+                    )
+
+
+                    ConstraintLayout(
+                            modifier = Modifier
+                                    .align(Alignment.CenterVertically)
+                    ) {
+                        val menu = createRef()
+                        IconButton(
+                                onClick = onToogleTheme,
+                                modifier = Modifier.constrainAs(menu) {
+                                    end.linkTo(parent.end)
+                                    top.linkTo(parent.top)
+                                    bottom.linkTo(parent.bottom)
+                                }
+                        ) {
+                            Icon(Icons.Filled.MoreVert)
+                        }
+                    }
+
+                }
+
 
                 val scrollState = rememberScrollState() //remember the scrolling state
 
@@ -100,7 +121,6 @@ fun SearchAppBar(
                     }
                 }
             }
-
         }
     }
 }
