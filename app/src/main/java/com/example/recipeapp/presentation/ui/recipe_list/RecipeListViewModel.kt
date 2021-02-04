@@ -11,7 +11,10 @@ import com.example.recipeapp.presentation.components.HeartAnimationDefinition.He
 import com.example.recipeapp.repository.RecipeRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.text.FieldPosition
 import javax.inject.Named
+
+const val PAGE_SIZE = 30
 
 /**
  * Recipe List View Model is a viewmodel which is life ycler aware
@@ -37,7 +40,9 @@ constructor(
 
     val isShowLoading = mutableStateOf(false)
 
-    val favState = mutableStateOf(IDLE)
+    val page = mutableStateOf(1)
+
+    var scrollingPosition = 0
 
     init {
         newSearch()
@@ -62,8 +67,46 @@ constructor(
         }
     }
 
+    fun nextPage() {
+        viewModelScope.launch {
+            // Prevent recomposition due to recomposition too quickly
+            if ((scrollingPosition + 1) >= page.value * PAGE_SIZE) {
+                isShowLoading.value = true
+                incrementPage()
+
+                delay(1000)
+
+                if (page.value > 1) {
+                    val results = recipeRepository.search(
+                            token = authToken,
+                            page = page.value,
+                            query = query.value
+                    )
+                    appendRecipe(results)
+                }
+                isShowLoading.value = false
+            }
+        }
+    }
+
+    fun onScrollPositionChanges(scrollPosition: Int) {
+        scrollingPosition = scrollPosition
+    }
+
+    private fun incrementPage() {
+        page.value = page.value + 1
+    }
+
+    private fun appendRecipe(recipes: List<Recipe>) {
+        val current = ArrayList(this.recipes.value)
+        current.addAll(recipes)
+        this.recipes.value = current
+    }
+
     private fun resetSearchState() {
         recipes.value = listOf()
+        page.value = 1
+        onScrollPositionChanges(0)
         if (selectedCategory.value?.value != query.value) clearSelectedCategory()
     }
 
